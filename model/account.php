@@ -7,10 +7,36 @@ class Account
     private string $accountType;
     private int $accountBalance;
     private bool $overdraft;
+    private static $accountCountPerClient = [];
 
     public function __construct(int $clientID, $accountID, string $accountType, int $accountBalance, bool $overdraft)
     {
         $this->clientID = $clientID;
+
+        // // Lire les ID clients depuis le fichier CSV
+        // $clientIDsFromCSV = []; // À remplir avec les ID clients depuis le fichier CSV
+
+        // if (!in_array($clientID, $clientIDsFromCSV)) {
+        //     throw new Exception("ID client non valide : $clientID");
+        // }
+
+        while (true) {
+            if (!isset(self::$accountCountPerClient[$clientID])) {
+                self::$accountCountPerClient[$clientID] = 0;
+            }
+
+            if (self::$accountCountPerClient[$clientID] >= 3) {
+                $errorMessage = "Limite de compte atteinte pour l'identifiant de client : $clientID";
+                echo $errorMessage . PHP_EOL;
+                echo "Veuillez entrer un autre identifiant de client." . PHP_EOL;
+                $clientID = intval(readline("Entrez un nouvel identifiant de client : "));
+                continue; // Revenir au début de la boucle pour re-vérifier la limite
+            }
+
+            break; // Sortir de la boucle si la limite n'est pas atteinte
+        }
+        self::$accountCountPerClient[$clientID]++;
+
         $this->setAccountID($accountID);
         $this->setAccountType($accountType);
         $this->setAccountBalance($accountBalance);
@@ -24,6 +50,27 @@ class Account
      */
     public function getClientID(): int
     {
+
+        //     $clientData = []; // Charger les donée via CSV
+
+        //     echo "Liste des clients : \n";
+        //     foreach ($clientData as $client) {
+        //         echo "{$client['clientID']} - {$client['clientName']}\n";
+        //     }
+
+        //     $selectedClientID = intval(readline("Entrez l'ID du client : "));
+
+        //     // Validate selected client ID and return
+        //     foreach ($clientData as $client) {
+        //         if ($client['clientID'] === $selectedClientID) {
+        //             return $selectedClientID;
+        //         }
+        //     }
+
+        // echo "Client avec ID $selectedClientID introuvable. Veuillez réessayer.\n"; //ou en dessous
+        //     throw new Exception("Client avec ID $selectedClientID introuvable.");
+        // }
+
         return $this->clientID;
     }
 
@@ -36,6 +83,20 @@ class Account
      */
     public function setClientID(int $clientID): self
     {
+
+        //     $clientData = []; // Charger les donée via CSV
+
+        //     foreach ($clientData as $client) {
+        //         if ($client['clientID'] === $clientID) {
+        //             $this->clientID = $clientID;
+        //             return $this;
+        //         }
+        //     }
+
+        // echo "Client avec ID $clientID introuvable.\n"; //ou en dessous
+        //     throw new Exception("Client avec ID $clientID introuvable.");
+        // }
+
         $this->clientID = $clientID;
 
         return $this;
@@ -117,22 +178,26 @@ class Account
             echo ' 3 - Compte escroquerie longue durée' . PHP_EOL;
             echo PHP_EOL . "----------------------------------------- " . PHP_EOL;
 
-            $m = readline(PHP_EOL . "Faite votre choix de compte : ");
+
+            $m = null;
+            while ($m !== "1" && $m !== "2" && $m !== "3") {
+                $m = readline("Faite votre choix de compte (1, 2 ou 3) : ");
+            }
 
             switch ($m) {
-                case 1:
+                case "1":
                     $accountType = "Courant";
                     break;
-                case 2:
+                case "2":
                     $accountType = "Livret A";
                     break;
-                case 3:
+                case "3":
                     $accountType = "Plan Epargne Logement";
                     break;
             }
 
-            $continuer = readline(PHP_EOL . "Voulez-<>vous revenir au menu ? (o/n) : ");
-            if ($continuer !== 'o') {
+            $continuer = readline("Voulez-vous confirmer votre saisie ? (o/n) : ");
+            if ($continuer === 'o') {
                 break; // Sortir de la boucle si l'utilisateur n'entre pas 'o'
             }
         }
@@ -161,13 +226,13 @@ class Account
     public function setAccountBalance(int $accountBalance): self
     {
         while (true) {
-            $input = intval(readline("Entrer le montant inital de votre compte : "));
+            $input = readline("Entrer le montant initial de votre compte : ");
 
-            if ($input >= 0) {
-                $accountBalance = $input;
+            if (ctype_digit($input) && intval($input) >= 0) {
+                $accountBalance = intval($input);
                 break;
             } else {
-                echo "Saisie invalide, veuillez entrer un momant supérieur ou égal à zéro." . PHP_EOL;
+                echo "Saisie invalide, veuillez entrer un montant valide supérieur ou égal à zéro." . PHP_EOL;
             }
         }
 
@@ -195,17 +260,32 @@ class Account
      */
     public function setOverdraft(bool $overdraft): self
     {
-        while (true) {
-            $input = strtolower(readline("Entrer 'true' ou 'false' le choix d'autorisation de découvert : "));
 
-            if ($input === "true") {
-                $overdraft = true;
-                break;
-            } elseif ($input === "false") {
-                $overdraft = false;
-                break;
-            } else {
-                echo "Saisie invalide, veuillez entrer 'true' ou 'false'." . PHP_EOL;
+        while (true) {
+            //Création du "menu"
+            $m = intval(0);
+            echo PHP_EOL . "------ Menu de choix d'autorisation de découvert' ------- " . PHP_EOL;
+            echo PHP_EOL . ' 1 - Découvert autorisé' . PHP_EOL;
+            echo ' 2 - Découvert refusée' . PHP_EOL;
+            echo PHP_EOL . "----------------------------------------- " . PHP_EOL;
+
+            $m = null;
+            while ($m !== "1" && $m !== "2") {
+                $m = readline("Faite votre choix d'autorisation de découvert (1 pour Découvert autorisé, 2 pour Découvert refusé) : ");
+            }
+
+            switch ($m) {
+                case 1:
+                    $overdraft = true;
+                    break;
+                case 2:
+                    $overdraft = false;
+                    break;
+            }
+
+            $continuer = readline("Voulez-vous confirmer votre saisie ? (o/n) : ");
+            if ($continuer === 'o') {
+                break; // Sortir de la boucle si l'utilisateur n'entre pas 'o'
             }
         }
         $this->overdraft = $overdraft;
@@ -214,20 +294,46 @@ class Account
     }
 }
 
+//         // Choix à la main
+//         while (true) {
+//             $input = strtolower(readline("Entrer 'true' ou 'false' le choix d'autorisation de découvert : "));
 
-// Test 
-// Création d'un objet Account en utilisant le constructeur
-$account = new Account(12345, null, "Courant", 0, true);
-// Accéder aux propriétés et les afficher
-echo "Client ID: " . $account->getClientID() . PHP_EOL;
-echo "Account ID: " . $account->getAccountID() . PHP_EOL;
-echo "Account Type: " . $account->getAccountType() . PHP_EOL;
-echo "Account Balance: " . $account->getAccountBalance() . PHP_EOL;
-echo "Overdraft Allowed: " . ($account->getOverdraft() ? "Autorisé" : "Refusé") . PHP_EOL;
+//             if ($input === "true") {
+//                 $overdraft = true;
+//                 break;
+//             } elseif ($input === "false") {
+//                 $overdraft = false;
+//                 break;
+//             } else {
+//                 echo "Saisie invalide, veuillez entrer 'true' ou 'false'." . PHP_EOL;
+//             }
+//         }
+//         $this->overdraft = $overdraft;
+
+//         return $this;
+//     }
+// }
 
 
-// Afficher les nouvelles valeurs après les modifications
-echo "Updated Account Balance: " . $account->getAccountBalance() . PHP_EOL;
-echo "Updated Account Type: " . $account->getAccountType() . PHP_EOL;
+while (true) {
+    // Test 
+    // Création d'un objet Account en utilisant le constructeur
+    $account = new Account(12345, null, "Courant", 0, true);
+    // Accéder aux propriétés et les afficher
+    echo "Client ID: " . $account->getClientID() . PHP_EOL;
+    echo "Account ID: " . $account->getAccountID() . PHP_EOL;
+    echo "Account Type: " . $account->getAccountType() . PHP_EOL;
+    echo "Account Balance: " . $account->getAccountBalance() . PHP_EOL;
+    echo "Overdraft Allowed: " . ($account->getOverdraft() ? "Autorisé" : "Refusé") . PHP_EOL;
 
-// $agencyAdress = ` $number + $street + $town + , + $postalCode `; //Pour asiggner l'adresse.
+
+    // Afficher les nouvelles valeurs après les modifications
+    // echo "Updated Account Balance: " . $account->getAccountBalance() . PHP_EOL;
+    // echo "Updated Account Type: " . $account->getAccountType() . PHP_EOL;
+
+    // $agencyAdress = ` $number + $street + $town + , + $postalCode `; //Pour asiggner l'adresse.
+    $continuer = readline("Voulez-vous crée un nouveau compte ? (o/n) : ");
+    if ($continuer !== 'o') {
+        break; // Sortir de la boucle si l'utilisateur n'entre pas 'o'
+    }
+}
