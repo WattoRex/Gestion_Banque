@@ -181,7 +181,7 @@ class Account
 
             $m = null;
             while ($m !== "1" && $m !== "2" && $m !== "3") {
-                $m = readline("Faite votre choix de compte (1, 2 ou 3) : ");
+                $m = trim(readline("Faites votre choix de compte (1, 2 ou 3) : "));
             }
 
             switch ($m) {
@@ -271,7 +271,7 @@ class Account
 
             $m = null;
             while ($m !== "1" && $m !== "2") {
-                $m = readline("Faite votre choix d'autorisation de découvert (1 pour Découvert autorisé, 2 pour Découvert refusé) : ");
+                $m = trim(readline("Faite votre choix d'autorisation de découvert (1 pour Découvert autorisé, 2 pour Découvert refusé) : "));
             }
 
             switch ($m) {
@@ -332,7 +332,7 @@ while (true) {
     // echo "Updated Account Type: " . $account->getAccountType() . PHP_EOL;
 
     // $agencyAdress = ` $number + $street + $town + , + $postalCode `; //Pour asiggner l'adresse.
-    $continuer = readline("Voulez-vous crée un nouveau compte ? (o/n) : ");
+    $continuer = trim(readline("Voulez-vous crée un nouveau compte ? (o/n) : "));
     if ($continuer !== 'o') {
         break; // Sortir de la boucle si l'utilisateur n'entre pas 'o'
     }
