@@ -12,31 +12,6 @@ class Account
     public function __construct(int $clientID, $accountID, string $accountType, int $accountBalance, bool $overdraft)
     {
         $this->clientID = $clientID;
-
-        // // Lire les ID clients depuis le fichier CSV
-        // $clientIDsFromCSV = []; // À remplir avec les ID clients depuis le fichier CSV
-
-        // if (!in_array($clientID, $clientIDsFromCSV)) {
-        //     throw new Exception("ID client non valide : $clientID");
-        // }
-
-        while (true) {
-            if (!isset(self::$accountCountPerClient[$clientID])) {
-                self::$accountCountPerClient[$clientID] = 0;
-            }
-
-            if (self::$accountCountPerClient[$clientID] >= 3) {
-                $errorMessage = "Limite de compte atteinte pour l'identifiant de client : $clientID";
-                echo $errorMessage . PHP_EOL;
-                echo "Veuillez entrer un autre identifiant de client." . PHP_EOL;
-                $clientID = intval(readline("Entrez un nouvel identifiant de client : "));
-                continue; // Revenir au début de la boucle pour re-vérifier la limite
-            }
-
-            break; // Sortir de la boucle si la limite n'est pas atteinte
-        }
-        self::$accountCountPerClient[$clientID]++;
-
         $this->setAccountID($accountID);
         $this->setAccountType($accountType);
         $this->setAccountBalance($accountBalance);
@@ -50,27 +25,6 @@ class Account
      */
     public function getClientID(): int
     {
-
-        //     $clientData = []; // Charger les donée via CSV
-
-        //     echo "Liste des clients : \n";
-        //     foreach ($clientData as $client) {
-        //         echo "{$client['clientID']} - {$client['clientName']}\n";
-        //     }
-
-        //     $selectedClientID = intval(readline("Entrez l'ID du client : "));
-
-        //     // Validate selected client ID and return
-        //     foreach ($clientData as $client) {
-        //         if ($client['clientID'] === $selectedClientID) {
-        //             return $selectedClientID;
-        //         }
-        //     }
-
-        // echo "Client avec ID $selectedClientID introuvable. Veuillez réessayer.\n"; //ou en dessous
-        //     throw new Exception("Client avec ID $selectedClientID introuvable.");
-        // }
-
         return $this->clientID;
     }
 
@@ -83,24 +37,11 @@ class Account
      */
     public function setClientID(int $clientID): self
     {
-
-        //     $clientData = []; // Charger les donée via CSV
-
-        //     foreach ($clientData as $client) {
-        //         if ($client['clientID'] === $clientID) {
-        //             $this->clientID = $clientID;
-        //             return $this;
-        //         }
-        //     }
-
-        // echo "Client avec ID $clientID introuvable.\n"; //ou en dessous
-        //     throw new Exception("Client avec ID $clientID introuvable.");
-        // }
-
         $this->clientID = $clientID;
 
         return $this;
     }
+
 
     /**
      * Get the value of accountID
@@ -121,33 +62,29 @@ class Account
      */
     public function setAccountID(?int $accountID = null): self
     {
-        if ($accountID === null) {
-            $accountID = $this->generateUniqueAccountID();
-        } elseif (strlen((string) $accountID) !== 11) {
-            throw new InvalidArgumentException("Account ID must be 11 digits long.");
+        // Lire le compteID le plus élevé depuis le fichier CSV
+        $highestAccountID = 10000000000; // Valeur de départ par défaut
+
+        $csvFile = fopen('accounts.csv', 'r');
+        if ($csvFile !== false) {
+            while (($data = fgetcsv($csvFile)) !== false) {
+                $currentAccountID = (int) $data[1]; // Supposons que l'ID de compte soit dans la deuxième colonne
+                if ($currentAccountID > $highestAccountID) {
+                    $highestAccountID = $currentAccountID;
+                }
+            }
+            fclose($csvFile);
         }
 
-        $this->accountID = $accountID;
+        // Incrémenter le compteID le plus élevé de un
+        $newAccountID = $highestAccountID + 1;
+
+        // S'assurer que le compteID a 11 chiffres
+        $formattedAccountID = str_pad($newAccountID, 11, '0', STR_PAD_LEFT);
+
+        $this->accountID = (int) $formattedAccountID;
 
         return $this;
-    }
-
-    private function generateUniqueAccountID(): int
-    {
-        // Genrer un nombre aléatoire composé de 11 chiffres
-        do {
-            $newAccountID = random_int(10000000000, 99999999999);
-        } while ($this->accountIDExists($newAccountID));
-
-        return $newAccountID;
-    }
-
-    private function accountIDExists(int $accountID): bool
-    {
-        // Vérifie dans la "base de donnée" les account ID existant
-        // Je souhaite pouvoir récuprer les données sauvegarder client d'un ficiher CSV et des les afficher 
-        // dans une liste menu (via un switch)  pour choisir le client qui souhaite crée un nouveau compte. 
-        return false; //Pour le moment on dit que non
     }
 
     /**
@@ -294,46 +231,25 @@ class Account
     }
 }
 
-//         // Choix à la main
-//         while (true) {
-//             $input = strtolower(readline("Entrer 'true' ou 'false' le choix d'autorisation de découvert : "));
+// while (true) {
+//     // Test 
+//     // Création d'un objet Account en utilisant le constructeur
+//     $account = new Account(12345, null, "Courant", 0, true);
+//     // Accéder aux propriétés et les afficher
+//     echo "Client ID: " . $account->getClientID() . PHP_EOL;
+//     echo "Account ID: " . $account->getAccountID() . PHP_EOL;
+//     echo "Account Type: " . $account->getAccountType() . PHP_EOL;
+//     echo "Account Balance: " . $account->getAccountBalance() . PHP_EOL;
+//     echo "Overdraft Allowed: " . ($account->getOverdraft() ? "Autorisé" : "Refusé") . PHP_EOL;
 
-//             if ($input === "true") {
-//                 $overdraft = true;
-//                 break;
-//             } elseif ($input === "false") {
-//                 $overdraft = false;
-//                 break;
-//             } else {
-//                 echo "Saisie invalide, veuillez entrer 'true' ou 'false'." . PHP_EOL;
-//             }
-//         }
-//         $this->overdraft = $overdraft;
 
-//         return $this;
+//     // Afficher les nouvelles valeurs après les modifications
+//     // echo "Updated Account Balance: " . $account->getAccountBalance() . PHP_EOL;
+//     // echo "Updated Account Type: " . $account->getAccountType() . PHP_EOL;
+
+//     // $agencyAdress = ` $number + $street + $town + , + $postalCode `; //Pour asiggner l'adresse.
+//     $continuer = trim(readline("Voulez-vous crée un nouveau compte ? (o/n) : "));
+//     if ($continuer !== 'o') {
+//         break; // Sortir de la boucle si l'utilisateur n'entre pas 'o'
 //     }
 // }
-
-
-while (true) {
-    // Test 
-    // Création d'un objet Account en utilisant le constructeur
-    $account = new Account(12345, null, "Courant", 0, true);
-    // Accéder aux propriétés et les afficher
-    echo "Client ID: " . $account->getClientID() . PHP_EOL;
-    echo "Account ID: " . $account->getAccountID() . PHP_EOL;
-    echo "Account Type: " . $account->getAccountType() . PHP_EOL;
-    echo "Account Balance: " . $account->getAccountBalance() . PHP_EOL;
-    echo "Overdraft Allowed: " . ($account->getOverdraft() ? "Autorisé" : "Refusé") . PHP_EOL;
-
-
-    // Afficher les nouvelles valeurs après les modifications
-    // echo "Updated Account Balance: " . $account->getAccountBalance() . PHP_EOL;
-    // echo "Updated Account Type: " . $account->getAccountType() . PHP_EOL;
-
-    // $agencyAdress = ` $number + $street + $town + , + $postalCode `; //Pour asiggner l'adresse.
-    $continuer = trim(readline("Voulez-vous crée un nouveau compte ? (o/n) : "));
-    if ($continuer !== 'o') {
-        break; // Sortir de la boucle si l'utilisateur n'entre pas 'o'
-    }
-}
