@@ -4,10 +4,10 @@ class Agence{
     private int $agencyCode;
     private string $agencyName;
     private string $agencyAdress;
-    public function __construct(int $agencyCode, string $agencyName, string $agencyAdress) {
-        $this->agencyCode = $agencyCode;
-        $this->agencyName = $agencyName;
-        $this->agencyAdress = $agencyAdress;
+    public function __construct($agencyCode, string $agencyName, string $agencyAdress) {
+        $this->setAgencyCode($agencyCode);
+        $this->setAgencyName($agencyName);
+        $this->setAgencyAdress($agencyAdress);
     }
 
 
@@ -28,10 +28,15 @@ class Agence{
      *
      * @return self
      */
-    public function setAgencyCode(int $agencyCode): self
-    {
-        $this->agencyCode = $agencyCode;
-
+    public function setAgencyCode(?int $agencyCode=null): self
+    {   
+        $agencyCode = 100;
+        if($agencyCode != 999){
+            $agencyCode = $agencyCode + 1;
+            $this->agencyCode = $agencyCode;
+        }else{
+            echo "le nombres d'agences maximales a ete atteint. ";
+        }
         return $this;
     }
 
@@ -54,6 +59,7 @@ class Agence{
      */
     public function setAgencyName(string $agencyName): self
     {
+        $agencyName = trim(strval(readline("Veuilez saisir le nom de l'agence : ")));
         $this->agencyName = $agencyName;
 
         return $this;
@@ -78,14 +84,19 @@ class Agence{
      */
     public function setAgencyAdress(string $agencyAdress): self
     {
-        $postalCode = intval(readline("Veuillez saisir votre code postal : "));
-        $town = strval(readline("Veuillez saisir votre ville : "));
-        $street = strval(readline("Veuillez saisir votre rue : "));
-        $number = intval(readline("Veuillez saisir votre numero de rue : "));
-        $this->agencyAdress = ;
+        $postalCode = trim(intval(readline("Veuillez saisir votre code postal : ")));
+        $town = trim(strval(readline("Veuillez saisir votre ville : ")));
+        $street = trim(strval(readline("Veuillez saisir votre rue : ")));
+        $number = trim(intval(readline("Veuillez saisir votre numero de rue : ")));
+        $agencyAdress = "l'adresse est : {$number} {$street}, {$postalCode}, {$town}. ";
+        $this->agencyAdress = $agencyAdress;
 
         return $this;
     }
 }
-// maif = new Agence(rthrh,452, setAgencyAdress());
+// $maif = new Agence(null,"", "");
+// echo "Nom de l'agence : " . $maif->getAgencyName() . PHP_EOL;
+// echo $maif->getAgencyCode() . PHP_EOL;
+// echo $maif->getAgencyAdress() . PHP_EOL;
+// echo "-----------------------" . PHP_EOL;
 ?>
