@@ -10,10 +10,10 @@ class Client
     public function __construct(int $clientID, string $nom, string $prenom, string $date_naissance, string $email)
     {
         $this->clientID = $clientID;
-        $this->nom = $nom;
-        $this->prenom = $prenom;
-        $this->date_naissance = $date_naissance;
-        $this->email = $email;
+        $this->setnom($nom);
+        $this->setprenom($prenom);
+        $this->setDateNaissance($date_naissance);
+        $this->setemail($email);
     }
 
     /**
@@ -59,6 +59,7 @@ class Client
      */
     public function setNom(string $nom): self
     {
+        $nom = trim(readline("Saisissez le nom du client : "));
         $this->nom = $nom;
 
         return $this;
@@ -83,6 +84,7 @@ class Client
      */
     public function setPrenom(string $prenom): self
     {
+        $prenom = trim(readline("Saisissez le prenom du client : "));
         $this->prenom = $prenom;
 
         return $this;
@@ -107,6 +109,7 @@ class Client
      */
     public function setDateNaissance(string $date_naissance): self
     {
+        $date_naissance = trim(readline("Saisissez la date de naissance du client : "));
         $this->date_naissance = $date_naissance;
 
         return $this;
@@ -131,8 +134,18 @@ class Client
      */
     public function setEmail(string $email): self
     {
+        $email = trim(readline("Saisissez l'email du client : "));
         $this->email = $email;
 
         return $this;
     }
 }
+
+$client = new Client(202020,"", "", "", "");
+echo "Informations du client : " . PHP_EOL;
+echo "Identifiant : " . $client->getClientID() . PHP_EOL;
+echo "Nom : " . $client->getNom() . PHP_EOL;
+echo "Prénom : " . $client->getPrenom() . PHP_EOL;
+echo "Date de naissance : " . $client->getDateNaissance() . PHP_EOL;
+echo "Email : " . $client->getEmail() . PHP_EOL;
+echo "-----------------------" . PHP_EOL;
