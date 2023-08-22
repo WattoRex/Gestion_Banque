@@ -7,7 +7,7 @@ class Account
     private string $accountType;
     private int $accountBalance;
     private bool $overdraft;
-    private static $accountCountPerClient = [];
+    // private static $accountCountPerClient = [];
 
     public function __construct(int $clientID, $accountID, string $accountType, int $accountBalance, bool $overdraft)
     {
@@ -38,7 +38,7 @@ class Account
      */
     public function setClientID(int $clientID): void
     {
-        $csvFile = 'clients.csv'; // Assurez-vous que le fichier clients.csv existe dans le même répertoire que votre script.
+        $csvFile = './save/clients.csv'; // Assurez-vous que le fichier clients.csv existe dans le même répertoire que votre script.
 
         $clientsData = []; // Tableau pour stocker les données
 
@@ -107,7 +107,7 @@ class Account
         // Lire le compteID le plus élevé depuis le fichier CSV
         $highestAccountID = 10000000000; // Valeur de départ par défaut
 
-        $csvFile = fopen('accounts.csv', 'r');
+        $csvFile = fopen('.save/accounts.csv', 'r');
         if ($csvFile !== false) {
             while (($data = fgetcsv($csvFile)) !== false) {
                 $currentAccountID = (int) $data[1]; // Supposons que l'ID de compte soit dans la deuxième colonne
@@ -250,7 +250,7 @@ class Account
 
             $m = null;
             while ($m !== "1" && $m !== "2") {
-                $m = trim(readline("Faite votre choix d'autorisation de découvert (1 pour Découvert autorisé, 2 pour Découvert refusé) : "));
+                $m = trim(readline("Faites votre choix d'autorisation de découvert (1 pour Découvert autorisé, 2 pour Découvert refusé) : "));
             }
 
             switch ($m) {
