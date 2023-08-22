@@ -107,12 +107,16 @@ class Client
      *
      * @return self
      */
-    public function setDateNaissance(string $date_naissance): self
+    public function setDateNaissance(string $date_naissance): void
     {
         $date_naissance = trim(readline("Saisissez la date de naissance du client : "));
-        $this->date_naissance = $date_naissance;
-
-        return $this;
+        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date_naissance) && ctype_digit(str_replace('/', '', $date_naissance)))
+        {
+            $this->date_naissance = $date_naissance;
+        } else {
+            echo "Format de date de naissance invalide. Utilisez le format DD/MM/YYYY et assurez-vous qu'il ne contient que des chiffres " . PHP_EOL;
+           exit; 
+        }
     }
 
     /**
