@@ -13,48 +13,6 @@ class Account
     {
         // $this->clientID = $clientID;
         $this->setClientID($clientID);
-        $csvFile = 'clients.csv'; // Assurez-vous que le fichier clients.csv existe dans le même répertoire que votre script.
-
-        $clientsData = []; // Tableau pour stocker les données
-
-        if (($handle = fopen($csvFile, 'r')) !== false) {
-            while (($data = fgetcsv($handle)) !== false) {
-                $clientsData[$data[0]] = [
-                    'nom' => $data[1],
-                    'nombre_de_compte' => $data[2]
-                ];
-            }
-            fclose($handle);
-        }
-
-        while (true) { // Boucle principale pour saisir les clients
-            // Affichage de la liste des clients
-            foreach ($clientsData as $id => $clientInfo) {
-                echo "ID Client : $id, Nom : {$clientInfo['nom']}, Nombre de comptes : {$clientInfo['nombre_de_compte']}\n";
-            }
-
-            // Saisie de l'ID client depuis l'utilisateur
-            $clientID = readline("Entrez l'ID du client que vous souhaitez afficher (ou 'e' pour quitter) : ");
-
-            if ($clientID === 'e') {
-                break; // Sortir du programme si l'utilisateur entre 'exit'
-            }
-
-            if (!array_key_exists($clientID, $clientsData)) {
-                echo "ID client non trouvé.\n";
-                continue; // Revenir au début de la boucle pour saisir un autre ID
-            }
-
-            $selectedClientInfo = $clientsData[$clientID];
-            $selectedClientName = $selectedClientInfo['nom'];
-            $selectedClientNumAccounts = $selectedClientInfo['nombre_de_compte'];
-
-            echo "Client sélectionné : ID $clientID, Nom : $selectedClientName, Nombre de comptes : $selectedClientNumAccounts\n";
-
-            if ($selectedClientNumAccounts >= 3) {
-                echo "Vous ne pouvez pas créer de nouveau compte. Le nombre de comptes est déjà de 3 ou plus.\n";
-            }
-        }
         $this->setAccountID($accountID);
         $this->setAccountType($accountType);
         $this->setAccountBalance($accountBalance);
@@ -102,6 +60,9 @@ class Account
 
             // Saisie de l'ID client depuis l'utilisateur
             $clientID = readline("Entrez l'ID du client que vous souhaitez afficher (ou 'e' pour quitter) : ");
+            if (array_key_exists($clientID, $clientsData)) {
+                break;
+            }
 
             if ($clientID === 'e') {
                 break; // Sortir du programme si l'utilisateur entre 'exit'
