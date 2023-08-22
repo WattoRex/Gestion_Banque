@@ -5,7 +5,7 @@ while (true) {
     //Création du "menu"
     $m = intval(0);
     echo "-------------------- Gestion Banque -------------------- " . PHP_EOL;
-    echo " 1 - Créer une agence " . PHP_EOL;
+    echo PHP_EOL . " 1 - Créer une agence " . PHP_EOL;
     echo " 2 - Créer un client " . PHP_EOL;
     echo " 3 - Créer un compte bancaire " . PHP_EOL;
     echo " 4 - Recherche de compte (numéro de compte) " . PHP_EOL;
@@ -13,11 +13,11 @@ while (true) {
     echo " 6 - Afficher la liste des comptes d'un client (Identifiant client) " . PHP_EOL;
     echo " 7 - Imprimer les infos client (Identifiant client) " . PHP_EOL;
     echo " 8 - Simuler frais de gestion " . PHP_EOL;
-    echo "-------------------------------------------------------- " . PHP_EOL;
-    echo " 9 - Quitter le programme " . PHP_EOL;
-    echo "-------------------------------------------------------- " . PHP_EOL;
+    echo PHP_EOL . "-------------------------------------------------------- " . PHP_EOL;
+    echo PHP_EOL . " 9 - Quitter le programme " . PHP_EOL;
+    echo PHP_EOL . "-------------------------------------------------------- " . PHP_EOL;
 
-    $m = readline(PHP_EOL . "Faite votre choix de configuration : ");
+    $m = readline("Faite votre choix de configuration : ");
 
     switch ($m) {
         case 1:

@@ -2,14 +2,14 @@
 
 class Client
 {
-    private int $clientID;
+    private string $clientID;
     private string $nom;
     private string $prenom;
     private string $date_naissance;
     private string $email;
-    public function __construct(int $clientID, string $nom, string $prenom, string $date_naissance, string $email)
+    public function __construct(string $clientID, string $nom, string $prenom, string $date_naissance, string $email)
     {
-        $this->clientID = $clientID;
+        $this->setClientID($clientID);
         $this->setnom($nom);
         $this->setprenom($prenom);
         $this->setDateNaissance($date_naissance);
@@ -21,7 +21,7 @@ class Client
      *
      * @return int
      */
-    public function getClientID(): int
+    public function getClientID(): string
     {
         return $this->clientID;
     }
@@ -33,10 +33,34 @@ class Client
      *
      * @return self
      */
-    public function setClientID(int $clientID): self
+    public function setClientID(string $clientID): self
     {
-        $this->clientID = $clientID;
+        $lettre = range("A", "Z");
+        $codeLettre1 = $lettre[array_rand($lettre)];
+        $codeLettre2 = $lettre[array_rand($lettre)];
+        $codeLettre = $codeLettre1 . $codeLettre2;
 
+        $csvFileName = './save/clients.csv';
+
+        // Lire le fichier CSV pour obtenir le nombre le plus élevé
+        $handle = fopen($csvFileName, 'r');
+        $maxNumber = 100000; // Valeur par défaut si le fichier est vide
+
+        if ($handle !== false) {
+            while (($data = fgetcsv($handle)) !== false) {
+                $currentNumber = (int) substr($data[0], 2); // Extraire les chiffres du clientID
+                if ($currentNumber > $maxNumber) {
+                    $maxNumber = $currentNumber;
+                }
+            }
+            fclose($handle);
+        }
+
+        $newNumber = $maxNumber + 1;
+        $formattedNewNumber = sprintf('%06d', $newNumber); // Formater en 6 chiffres avec des zéros
+
+        $clientID = $codeLettre . $formattedNewNumber;
+        $this->clientID = $clientID;
         return $this;
     }
 
@@ -141,6 +165,7 @@ class Client
     }
 }
 
+// Exemple test
 // $client = new Client(202020, "", "", "", "");
 // echo "Informations du client : " . PHP_EOL;
 // echo "Identifiant : " . $client->getClientID() . PHP_EOL;
@@ -149,39 +174,3 @@ class Client
 // echo "Date de naissance : " . $client->getDateNaissance() . PHP_EOL;
 // echo "Email : " . $client->getEmail() . PHP_EOL;
 // echo "-----------------------" . PHP_EOL;
-
-
-$lettre = range("A", "Z");
-$codeLettre1 = $lettre[array_rand($lettre)];
-$codeLettre2 = $lettre[array_rand($lettre)];
-$codeLettre = $codeLettre1 . $codeLettre2;
-echo $codeLettre;
-
-$csvFileName = 'clients.csv';
-
-// Lire le fichier CSV pour obtenir le nombre le plus élevé
-$handle = fopen($csvFileName, 'r');
-$maxNumber = 100000; // Valeur par défaut si le fichier est vide
-
-if ($handle !== false) {
-    while (($data = fgetcsv($handle)) !== false) {
-        $currentNumber = (int) $data[0];
-        if ($currentNumber > $maxNumber) {
-            $maxNumber = $currentNumber;
-        }
-    }
-    fclose($handle);
-}
-
-$newNumber = $maxNumber + 1;
-
-// Générer le nouveau numéro et l'afficher
-$newCode = $lettre1 . $lettre2 . $newNumber;
-echo "Nouveau code généré : $newCode";
-
-// // Mettre à jour le fichier CSV avec le nouveau numéro
-// $handle = fopen($csvFileName, 'a');
-// if ($handle !== false) {
-//     fputcsv($handle, [$newNumber]);
-//     fclose($handle);
-// }
