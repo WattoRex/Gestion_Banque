@@ -2,14 +2,14 @@
 
 class Account
 {
-    private int $clientID;
+    private string $clientID;
     private int $accountID;
     private string $accountType;
     private int $accountBalance;
     private bool $overdraft;
     // private static $accountCountPerClient = [];
 
-    public function __construct(int $clientID, $accountID, string $accountType, int $accountBalance, bool $overdraft)
+    public function __construct($clientID, $accountID, string $accountType, int $accountBalance, bool $overdraft)
     {
         // $this->clientID = $clientID;
         $this->setClientID($clientID);
@@ -24,7 +24,7 @@ class Account
      *
      * @return int
      */
-    public function getClientID(): int
+    public function getClientID(): string
     {
         return $this->clientID;
     }
@@ -36,55 +36,57 @@ class Account
      *
      * @return self
      */
-    public function setClientID(int $clientID): void
+    public function setClientID(string $clientID): void
     {
         $csvFile = './save/clients.csv'; // Assurez-vous que le fichier clients.csv existe dans le même répertoire que votre script.
-
         $clientsData = []; // Tableau pour stocker les données
+        $clientsIDs = []; // Tableau pour stocker les IDs des clients
+
 
         if (($handle = fopen($csvFile, 'r')) !== false) {
             while (($data = fgetcsv($handle)) !== false) {
+                $clientsIDs[] = $data[0]; // Ajouter l'ID de compte au tableau
                 $clientsData[$data[0]] = [
                     'nom' => $data[1],
-                    'nombre_de_compte' => $data[2]
                 ];
             }
             fclose($handle);
         }
 
-        while (true) { // Boucle principale pour saisir les clients
-            // Affichage de la liste des clients
-            foreach ($clientsData as $id => $clientInfo) {
-                echo "ID Client : $id, Nom : {$clientInfo['nom']}, Nombre de comptes : {$clientInfo['nombre_de_compte']}\n";
+        // Si aucun compte n'a été trouvé dans le fichier
+        if (empty($clientsIDs)) {
+            echo "Aucun client trouvé dans le fichier." . PHP_EOL;
+        } else {
+            echo "Choisissez un clients  : " . PHP_EOL;
+
+            // Afficher le menu avec les options d'IDs de compte
+            foreach ($clientsIDs as $index => $clientsID) {
+                echo ($index + 1) . ". clients ID: $clientsID" . PHP_EOL;
             }
 
-            // Saisie de l'ID client depuis l'utilisateur
-            $clientID = readline("Entrez l'ID du client que vous souhaitez afficher (ou 'e' pour quitter) : ");
-            if (array_key_exists($clientID, $clientsData)) {
-                break;
+            // Initialiser la variable $choiceValid avant d'entrer dans la boucle
+            $choiceValid = false;
+
+            while (!$choiceValid) {
+                // Demander à l'utilisateur de choisir une option
+                $choice = trim(readline("Entrez le numéro client dont vous souhaitez crée un compte : "));
+
+                // Vérification que l'entrée est un nombre entier
+                if (ctype_digit($choice)) {
+                    $choice = intval($choice);
+                    if ($choice >= 1 && $choice <= count($clientsIDs)) {
+                        $choiceValid = true;
+                    } else {
+                        echo "Option invalide. Veuillez entrer un numéro entre 1 et " . count($clientsIDs) . "." . PHP_EOL;
+                    }
+                } else {
+                    echo "Option invalide. Veuillez entrer un numéro valide." . PHP_EOL;
+                }
             }
-
-            if ($clientID === 'e') {
-                break; // Sortir du programme si l'utilisateur entre 'exit'
-            }
-
-            if (!array_key_exists($clientID, $clientsData)) {
-                echo "ID client non trouvé.\n";
-                continue; // Revenir au début de la boucle pour saisir un autre ID
-            }
-
-            $selectedClientInfo = $clientsData[$clientID];
-            $selectedClientName = $selectedClientInfo['nom'];
-            $selectedClientNumAccounts = $selectedClientInfo['nombre_de_compte'];
-
-            echo "Client sélectionné : ID $clientID, Nom : $selectedClientName, Nombre de comptes : $selectedClientNumAccounts\n";
-
-            if ($selectedClientNumAccounts >= 3) {
-                echo "Vous ne pouvez pas créer de nouveau compte. Le nombre de comptes est déjà de 3 ou plus.\n";
-            }
+            $selectedclientsID = $clientsIDs[$choice - 1];
+            $this->clientID = $selectedclientsID;
         }
     }
-
     /**
      * Get the value of accountID
      *
@@ -107,10 +109,10 @@ class Account
         // Lire le compteID le plus élevé depuis le fichier CSV
         $highestAccountID = 10000000000; // Valeur de départ par défaut
 
-        $csvFile = fopen('.save/accounts.csv', 'r');
+        $csvFile = fopen('./save/accounts.csv', 'r');
         if ($csvFile !== false) {
             while (($data = fgetcsv($csvFile)) !== false) {
-                $currentAccountID = (int) $data[1]; // Supposons que l'ID de compte soit dans la deuxième colonne
+                $currentAccountID = (int) $data[1]; // l'ID de compte soit dans la deuxième colonne
                 if ($currentAccountID > $highestAccountID) {
                     $highestAccountID = $currentAccountID;
                 }
@@ -148,17 +150,37 @@ class Account
      */
     public function setAccountType(string $accountType): self
     {
+        $existingAccountTypes = []; // Tableau pour stocker les types de compte existants pour le client
+
+        // Vérifier les comptes existants pour le client donné
+        $csvFile = fopen('./save/accounts.csv', 'r');
+        if ($csvFile !== false) {
+            while (($data = fgetcsv($csvFile)) !== false) {
+                if ($data[0] === $this->getClientID()) {
+                    $existingAccountTypes[] = $data[2]; // le type de compte est dans la troisième colonne
+                }
+            }
+            fclose($csvFile);
+        }
+
+        // Vérifier si les trois types de compte sont déjà créés
+        $allAccountTypesExist = in_array("Courant", $existingAccountTypes) &&
+            in_array("Livret A", $existingAccountTypes) &&
+            in_array("Plan d'Épargne Logement", $existingAccountTypes);
+        if ($allAccountTypesExist) {
+            echo "Les trois types de compte sont déjà créés pour ce client. Le programme est arrêté.";
+            include('./account/CreateAccount.php');
+            exit();
+        }
+
         while (true) {
-            //Création du "menu"
-            $m = intval(0);
+            $m = null;
             echo PHP_EOL . "------ Menu de choix de compte ------- " . PHP_EOL;
             echo PHP_EOL . ' 1 - Compte courant' . PHP_EOL;
-            echo ' 2 - Compte Epargne' . PHP_EOL;
-            echo ' 3 - Compte escroquerie longue durée' . PHP_EOL;
+            echo ' 2 - Compte Épargne' . PHP_EOL;
+            echo ' 3 - Compte escroquerie à long terme' . PHP_EOL;
             echo PHP_EOL . "----------------------------------------- " . PHP_EOL;
 
-
-            $m = null;
             while ($m !== "1" && $m !== "2" && $m !== "3") {
                 $m = trim(readline("Faites votre choix de compte (1, 2 ou 3) : "));
             }
@@ -171,15 +193,18 @@ class Account
                     $accountType = "Livret A";
                     break;
                 case "3":
-                    $accountType = "Plan Epargne Logement";
+                    $accountType = "Plan d'Épargne Logement";
                     break;
             }
 
-            $continuer = readline("Voulez-vous confirmer votre saisie ? (o/n) : ");
-            if ($continuer === 'o') {
-                break; // Sortir de la boucle si l'utilisateur n'entre pas 'o'
+            // Vérifier si le type de compte sélectionné existe déjà pour le client
+            if (in_array($accountType, $existingAccountTypes)) {
+                echo "Un compte de type '$accountType' existe déjà pour ce client. Veuillez choisir un autre type de compte." . PHP_EOL;
+            } else {
+                break;
             }
         }
+
         $this->accountType = $accountType;
 
         return $this;

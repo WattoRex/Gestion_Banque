@@ -25,16 +25,20 @@ while (true) {
         case 2:
             break;
         case 3:
+            include('./account/CreateAccount.php');
             break;
         case 4:
+            include('./account/DisplayAccount.php');
             break;
         case 5:
             break;
         case 6:
+            include('./account/DisplayAllAccount.php');
             break;
         case 7:
             break;
         case 8:
+
             break;
         case 9:
             break;
