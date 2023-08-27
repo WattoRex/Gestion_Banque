@@ -1,6 +1,6 @@
 <?php
 include_once("./lib/index.php");
-include_once("./model/clients_copy.php");
+include_once("./model/clients.php");
 
 $clientsData = [];
 $lastAccountID = 0;

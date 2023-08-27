@@ -22,29 +22,39 @@ while (true) {
     switch ($m) {
         case 1:
             break;
+
         case 2:
+            include('./clients/CreateClient.php');
             break;
+
         case 3:
             include('./account/CreateAccount.php');
             break;
+
         case 4:
             include('./account/DisplayAccount.php');
             break;
+
         case 5:
             break;
+
         case 6:
             include('./account/DisplayAllAccount.php');
             break;
-        case 7:
-            break;
-        case 8:
 
+        case 7:
+            include('./clients/customerinfoprint.php');
             break;
+
+        case 8:
+            break;
+
         case 9:
-            break;
+            echo "Merci d'avoir utilisé le programme de gestion de banque. Au revoir !\n";
+            exit;
     }
 
-    $continuer = readline(PHP_EOL . "Voulez-<>vous revenir au menu ? (o/n) : ");
+    $continuer = readline("Voulez-<>vous revenir au menu ? (o/n) : ");
     if ($continuer !== 'o') {
         break; // Sortir de la boucle si l'utilisateur n'entre pas 'o'
     }
