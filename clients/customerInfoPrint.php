@@ -134,7 +134,12 @@ foreach ($info['accountInfo'] as $account) {
     $output .= str_pad($accountNumber, 20, " ") . "\t" . str_pad($balance . " euros", 20, " ", STR_PAD_BOTH) . $emoji . "\n";
 }
 
-$filename = $selectedclientsID . '_client_info.txt'; // Utilisation de l'ID client pour nommer le fichier
+$folderName = 'InfoClient'; // Nom du dossier
+if (!is_dir($folderName)) {
+    mkdir($folderName); // Créer le dossier s'il n'existe pas
+}
+
+$filename = $folderName . '/' . $selectedclientsID . '_client_info.txt'; // Utilisation de l'ID client pour nommer le fichier
 file_put_contents($filename, $output);
 
 echo "Les informations du client ont été enregistrées dans le fichier $filename.";
