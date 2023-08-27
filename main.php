@@ -21,6 +21,7 @@ while (true) {
 
     switch ($m) {
         case 1:
+            echo "Fonctionnalité en cour d'ajout !\n";
             break;
 
         case 2:
@@ -36,6 +37,7 @@ while (true) {
             break;
 
         case 5:
+            echo "Fonctionnalité en cour d'ajout !\n";
             break;
 
         case 6:
@@ -47,6 +49,7 @@ while (true) {
             break;
 
         case 8:
+            echo "Fonctionnalité en cour d'ajout !\n";
             break;
 
         case 9:
