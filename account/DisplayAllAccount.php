@@ -80,5 +80,5 @@ if (count($accountsData) > 0) {
         }
     }
 } else {
-    echo "Aucun compte trouvé pour le client avec l'ID $clientID." . PHP_EOL;
+    echo "Aucun compte trouvé pour ce client. " . PHP_EOL;
 }

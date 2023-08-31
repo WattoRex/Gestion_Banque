@@ -37,7 +37,7 @@ while (true) {
             break;
 
         case 5:
-            echo "Fonctionnalité en cour d'ajout !\n";
+            include('./clients/DisplayClientInfo.php');
             break;
 
         case 6:
@@ -57,7 +57,7 @@ while (true) {
             exit;
     }
 
-    $continuer = readline("Voulez-<>vous revenir au menu ? (o/n) : ");
+    $continuer = readline("Voulez-vous revenir au menu ? (o/n) : ");
     if ($continuer !== 'o') {
         break; // Sortir de la boucle si l'utilisateur n'entre pas 'o'
     }
