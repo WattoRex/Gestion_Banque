@@ -43,13 +43,13 @@ class Agence{
      */
     public function setAgencyCode(?int $agencyCode=null): self
     {   
-         // Lire le compteID le plus élevé depuis le fichier CSV
-         $highestAgencyCode = 1000; // Valeur de départ par défaut
+         // Lire le code agence le plus élevé depuis le fichier CSV
+         $highestAgencyCode = 100; // Valeur de départ par défaut
 
-         $csvFile = fopen('agences.csv', 'r');
+         $csvFile = fopen('./save/agences.csv', 'r');
          if ($csvFile !== false) {
              while (($data = fgetcsv($csvFile)) !== false) {
-                 $currentAgencyCode = (int) $data[0]; // Supposons que l'ID de compte soit dans la deuxième colonne
+                 $currentAgencyCode = (int) $data[0]; // Supposons que le code de l'agence soit dans la 1 colonne
                  if ($currentAgencyCode > $highestAgencyCode) {
                      $highestAgencyCode = $currentAgencyCode;
                  }
@@ -57,10 +57,10 @@ class Agence{
              fclose($csvFile);
          }
  
-         // Incrémenter le compteID le plus élevé de un
+         // Incrémenter le agencyCode le plus élevé de un
          $newAgencyCode = $highestAgencyCode + 1;
  
-         // S'assurer que le compteID a 11 chiffres
+         // S'assurer que le agencyCode a 3 chiffres
          $formattedAgencyCode = str_pad($newAgencyCode, 3, '0', STR_PAD_LEFT);
  
          $this->agencyCode = (int) $formattedAgencyCode;
@@ -86,11 +86,18 @@ class Agence{
      * @return self
      */
     public function setAgencyName(string $agencyName): self
-    {
-        $agencyName = trim(strval(readline("Veuilez saisir le nom de l'agence : ")));
-        $this->agencyName = $agencyName;
+    {   
+        do{
+            $agencyName = trim(strval(readline("Veuilez saisir le nom de l'agence : ")));
+            if(ctype_alpha($agencyName)){
+                $this->agencyName = $agencyName;
+                break;
+            }else 
+                echo "Veuillez saisir que des carateres alphabetique !" . PHP_EOL;
+        }while(true);
+            return $this;
 
-        return $this;
+
     }
 
     /**
@@ -111,24 +118,47 @@ class Agence{
      * @return self
      */
     public function setAgencyAdress(string $agencyAdress): self
-    {
-        testString($postalCode = trim(intval(readline("Veuillez saisir votre code postal : "))));
-        $town = trim(strval(readline("Veuillez saisir votre ville : ")));
-        $street = trim(strval(readline("Veuillez saisir votre rue : ")));
-        $number = trim(intval(readline("Veuillez saisir votre numero de rue : ")));
-        $agencyAdress = "{$number} {$street}, {$postalCode}, {$town}. ";
+    {   
+        while(true){
+            $postalCode = trim(intval(readline("Veuillez saisir votre code postal : ")));
+            if(/*ctype_digit($postalCode) && */preg_match('/^\d{5}$/', $postalCode)){
+            break;
+         }else 
+        echo "Veuillez saisir que des carateres numeriques !" . PHP_EOL;
+        }
+        while(true){
+            $town = trim(strval(readline("Veuillez saisir votre ville : ")));
+            if(ctype_alpha($town)){
+                break;
+             }else 
+            echo "Veuillez saisir que des carateres alphabetique !" . PHP_EOL;
+            }
+        while(true){
+            $street = trim(strval(readline("Veuillez saisir votre rue : ")));
+            if(ctype_alpha($street)){
+                break;
+             }else 
+            echo "Veuillez saisir que des carateres alphabetique !" . PHP_EOL;
+            }
+        while(true){
+            $number = trim(intval(readline("Veuillez saisir votre numero de rue : ")));
+            if(ctype_digit($number)){
+                break;
+             }else 
+            echo "Veuillez saisir que des carateres numerique !" . PHP_EOL;
+            }
+        $agencyAdress = "{$number} {$street}, {$postalCode}, {$town}.";
         $this->agencyAdress = $agencyAdress;
 
         return $this;
     }
 
-    function testString(string $testChaine){
-       $bool = ctype_alpha($testChaine);
-        do{ 
-            echo "il ne faut que des caracteres alphanumeriques. ";
-        }while($bool);
-    }
-
+    // function testString(string $testChaine){
+    //    $bool = ctype_alpha($testChaine);
+    //     do{ 
+    //         echo "il ne faut que des caracteres alphanumeriques. ";
+    //     }while($bool);
+    // }
     // public function testInt(){
 
     // }
