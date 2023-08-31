@@ -21,7 +21,8 @@ while (true) {
 
     switch ($m) {
         case 1:
-            echo "Fonctionnalité en cour d'ajout !\n";
+            include('./agency/createAgency.php');
+
             break;
 
         case 2:
