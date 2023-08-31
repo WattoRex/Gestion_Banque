@@ -1,0 +1,11 @@
+Fiche client
+
+Numéro client : ZF100003
+Nom : John
+Prénom : Doe
+Date de naissance : 15/05/1985
+_______________________________________________
+Liste de compte
+_______________________________________________
+Numéro de compte	        Solde
+_______________________________________________
